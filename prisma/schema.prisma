@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Admin {
+  id              String @id @unique
+  name            String
+  email           String
+  password        String
+  confirmPassword String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  netflix Netflix[]
+
+  @@map("admin")
+}
+
+model Movies {
+  id          String @id @unique
+  title       String @unique
+  description String
+  image       String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  users Netflix[]
+
+  @@map("movies")
+}
+
+model User {
+  id       String @id @unique
+  name     String
+  cpf      String @unique
+  email    String @unique
+  password String
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  movies Netflix[]
+
+  @@map("user")
+}
+
+model Netflix {
+  id String @id @unique
+
+  admin   Admin  @relation(fields: [adminId], references: [id])
+  adminId String
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @map("user_Id")
+
+  movies  Movies @relation(fields: [movieId], references: [id])
+  movieId String @map("movie_Id")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("netflix")
+}
